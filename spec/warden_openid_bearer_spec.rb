@@ -5,7 +5,9 @@ RSpec.describe WardenOpenidBearer do
     expect(WardenOpenidBearer::VERSION).not_to be nil
   end
 
-  it "does something useful" do
-    expect(false).to eq(true)
+  it "can be configured" do
+    WardenOpenidBearer.configure do |config|
+      config.openid_metadata_url = "https://example.com/"
+    end
   end
 end
