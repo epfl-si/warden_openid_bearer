@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module WardenOpenidBearer
   # We don't need an overengineered approach based on the Rails cache.
   # No, really.
