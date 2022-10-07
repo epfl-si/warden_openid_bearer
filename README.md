@@ -22,6 +22,14 @@ TODO: Write usage instructions here
 
 After checking out the Git repository, run `bin/setup` to install dependencies. Then, run `bundle exec rake` to run the test suite and linter checks. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
+### Debugger
+
+The `debugger` gem is a development-time requirement (in the Gemfile). In order to activate it:
+
+1. Uncomment the line that says `require "debug"` in `./spec_helper.rb`
+1. Stick `debugger` somewhere in the source or test code
+1. Run the test suite
+
 ### Local Install
 
 To install this gem onto your local machine, run `bundle exec rake install`.

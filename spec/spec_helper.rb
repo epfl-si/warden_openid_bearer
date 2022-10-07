@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "warden_openid_bearer"
+# require "debug"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
