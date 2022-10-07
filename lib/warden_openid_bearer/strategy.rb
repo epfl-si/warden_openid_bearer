@@ -1,21 +1,21 @@
-# Like `WardenOpenidAuth::Strategy` in
-# `lib/warden_openid_auth/strategy.rb` from the `warden_openid_auth`
-# gem, except done right for a modern, split-backend Web application
-# (in which the browser takes charge of the OAuth2 login dance, and
-# the back-end only checks signatures on the JWT claims).
-#
-# You shoud subclass `WardenOpenidBearer::Strategy` and override the
-# `user_of_claims` protected method if you want `env['warden'].user`
-# to be a “real” user object (instead of just a hash of OIDC claims,
-# which is what happens when using `WardenOpenidBearer::Strategy` directly).
-# If you want your Rails app to support more than one OIDC
-# authentication server, you should also subclass
-# `WardenOpenidBearer::Strategy` and override the `metadata_url` method.
-#
-# This class has a `self.register!` method, which makes things
-# (slightly) easier than calling `Warden::Strategies.add` yourself.
-# See `WardenOpenidBearer::Registerer` for details.
 module WardenOpenidBearer
+  # Like `WardenOpenidAuth::Strategy` in
+  # `lib/warden_openid_auth/strategy.rb` from the `warden_openid_auth`
+  # gem, except done right for a modern, split-backend Web application
+  # (in which the browser takes charge of the OAuth2 login dance, and
+  # the back-end only checks signatures on the JWT claims).
+  #
+  # You shoud subclass `WardenOpenidBearer::Strategy` and override the
+  # `user_of_claims` protected method if you want `env['warden'].user`
+  # to be a “real” user object (instead of just a hash of OIDC claims,
+  # which is what happens when using `WardenOpenidBearer::Strategy` directly).
+  # If you want your Rails app to support more than one OIDC
+  # authentication server, you should also subclass
+  # `WardenOpenidBearer::Strategy` and override the `metadata_url` method.
+  #
+  # This class has a `self.register!` method, which makes things
+  # (slightly) easier than calling `Warden::Strategies.add` yourself.
+  # See `WardenOpenidBearer::Registerer` for details.
   class Strategy < Warden::Strategies::Base
     include WardenOpenidBearer::Registerer # Provides self.register!
     include WardenOpenidBearer::CacheMixin
