@@ -1,8 +1,55 @@
 # WardenOpenidBearer
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/warden_openid_bearer`. To experiment with that code, run `bin/console` for an interactive prompt.
+[Warden](https://github.com/wardencommunity/warden) strategy for authentication with OpenID-Connect JWT bearer tokens.
 
-TODO: Delete this and the text above, and describe your gem
+This gem is like
+[the `warden_openid_auth gem`](https://rubygems.org/gems/warden_openid_auth),
+except that it only provides support for the very last step of
+the OAuth code flow, i.e. when the resource server / relying party
+(your Ruby Web app) validates and decodes the JWT token.
+
+Use this gem if your client-side Web (or mobile) app will be taking
+care of the rest of the OAuth2 motions, such as redirecting (or
+opening a popup window) to the authentication server at login time,
+managing and refreshing tokens, doing all these unspeakable things
+with iframes, etc.
+
+## Usage
+
+### In a Rails application
+
+
+1. Add the [`rails_warden` gem](https://rubygems.org/gems/rails_warden) into your application
+1. Add the following to e.g. `config/initializers/authentication.rb`:
+   ```ruby
+   Rails.application.config.middleware.use RailsWarden::Manager do |manager|
+     manager.default_strategies WardenOpenidBearer::Strategy.register!
+     WardenOpenidBearer.configure do |oidc|
+       oidc.openid_metadata_url = "https://example.com/.well-known/openid-configuration"
+     end
+   
+     manager.failure_app = Proc.new { |_env|
+       ['401', {'Content-Type' => 'application/json'}, [{ error: 'Unauthorized' }.to_json]]
+     }
+   end
+   ```
+1. Access control must be explicitly added to your controllers, e.g.
+   ```ruby
+   class MyController < ApplicationController
+     before_action do
+       authenticate!
+     end
+   end
+   ```
+   
+### Subclassing
+
+Subclassing `WardenOpenidBearer::Strategy` is the recommended way to
+- support more than one authentication server (overriding `metadata_url` and/or `cache_timeout`),
+- provide user hydration into the class of your choice (overriding `user_of_claims`).
+
+More details available in the rubydoc comments of
+[`lib/warden_openid_bearer/strategy.rb`](lib/warden_openid_bearer/strategy.rb).
 
 ## Installation
 
@@ -13,10 +60,6 @@ Install the gem and add to the application's Gemfile by executing:
 If bundler is not being used to manage dependencies, install the gem by executing:
 
     $ gem install warden_openid_bearer
-
-## Usage
-
-TODO: Write usage instructions here
 
 ## Development
 
