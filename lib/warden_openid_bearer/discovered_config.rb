@@ -1,3 +1,5 @@
+require "net/http"
+
 module WardenOpenidBearer
   # Cacheable configuration (periodically re-)fetched starting from
   # the OpenID authentication server's “well-known” endpoint

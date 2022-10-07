@@ -1,3 +1,5 @@
+require "jwt"
+
 module WardenOpenidBearer
   # Like `WardenOpenidAuth::Strategy` in
   # `lib/warden_openid_auth/strategy.rb` from the `warden_openid_auth`
