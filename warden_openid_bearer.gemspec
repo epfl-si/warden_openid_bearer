@@ -40,5 +40,6 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "warden", "~> 1.2.0"
   spec.add_dependency "dry-configurable", "~> 0.15.0"
 end

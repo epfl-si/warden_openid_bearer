@@ -14,3 +14,10 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
+
+def stub_underscore(from, to)
+  allow_any_instance_of(String).to receive(:underscore) do |that|
+    expect(that).to eq(from)
+    to
+  end
+end

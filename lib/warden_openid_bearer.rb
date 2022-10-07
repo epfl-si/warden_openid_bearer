@@ -3,6 +3,7 @@
 require "dry/configurable"
 
 require_relative "warden_openid_bearer/version"
+require_relative "warden_openid_bearer/registerer"
 
 module WardenOpenidBearer
   extend Dry::Configurable
