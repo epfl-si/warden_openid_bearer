@@ -52,7 +52,10 @@ module WardenOpenidBearer
 
     # Made public so that one may tune the `strategy.config.cache_timeout`:
     def config
-      @config ||= WardenOpenidBearer::DiscoveredConfig.new(metadata_url)
+      return @config if @config
+      @config = WardenOpenidBearer::DiscoveredConfig.new(metadata_url)
+      @config.cache_timeout = cache_timeout
+      @config
     end
 
     protected
@@ -77,6 +80,16 @@ module WardenOpenidBearer
       WardenOpenidBearer.config.openid_metadata_url
     end
 
+    # Returns the cache timeout for the security data obtained from
+    # the authentication server.
+    #
+    # The default implementation uses a global configuration. Like
+    # `metadata_url`, you should override this in multiple subclasses
+    # if you want multiple OpenID authentication servers.
+    def cache_timeout
+      WardenOpenidBearer.config.cache_timeout
+    end
+
     # Returns the JWT token from `request.headers['Authorization']`
     # (which may or may not be valid)
     def token
@@ -85,6 +98,7 @@ module WardenOpenidBearer
       # this class and re-uses it across requests (see
       # `_fetch_strategy` in `lib/warden/proxy.rb`).
       cached_by(request) do
+        puts request.headers
         strategy, token = (request.headers["Authorization"] || "").split(" ")
         token if (strategy || "").downcase == "bearer"
       end

@@ -10,6 +10,16 @@ RSpec.describe WardenOpenidBearer::Strategy do
     end
   end
 
+  it "lets you configure the cache timeout" do
+    WardenOpenidBearer.configure do |config|
+      config.openid_metadata_url = "https://example.com/"
+      config.cache_timeout = 444
+    end
+
+    strategy = WardenOpenidBearer::Strategy.new({})
+    expect(strategy.config.cache_timeout).to eq(444)
+  end
+
   it "tokenizes" do
     def stub_request(strategy, authorization_header)
       request = double("request", {headers:

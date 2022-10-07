@@ -12,4 +12,5 @@ module WardenOpenidBearer
   extend Dry::Configurable
 
   setting :openid_metadata_url, constructor: ->(url) { URI(url) }
+  setting :cache_timeout, default: 900
 end
