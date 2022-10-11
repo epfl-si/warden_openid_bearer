@@ -102,7 +102,6 @@ module WardenOpenidBearer
       # this class and re-uses it across requests (see
       # `_fetch_strategy` in `lib/warden/proxy.rb`).
       cached_by(request) do
-        puts request.headers
         strategy, token = (request.headers["Authorization"] || "").split(" ")
         token if (strategy || "").downcase == "bearer"
       end
