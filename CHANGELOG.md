@@ -1,3 +1,6 @@
+## [0.1.4] - 2022-10-11
+- Clean up a stray `puts` left when debugging
+
 ## [0.1.3] - 2022-10-07
 - Fix `require`s
 
