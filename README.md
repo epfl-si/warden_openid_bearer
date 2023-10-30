@@ -87,7 +87,7 @@ To release a new version:
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/epfl-si/warden_openid_bearer.
+Bug reports and pull requests are welcome on GitHub at https://github.com/epfl-si/warden_openid_bearer .
 
 ## License
 
