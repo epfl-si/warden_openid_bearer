@@ -69,7 +69,7 @@ After checking out the Git repository, run `bin/setup` to install dependencies. 
 
 The `debugger` gem is a development-time requirement (in the Gemfile). In order to activate it:
 
-1. Uncomment the line that says `require "debug"` in `./spec_helper.rb`
+1. Uncomment the line that says `require "debug"` in `./spec/spec_helper.rb`
 1. Stick `debugger` somewhere in the source or test code
 1. Run the test suite
 
