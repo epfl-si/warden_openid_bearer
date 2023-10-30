@@ -4,31 +4,36 @@ module WardenOpenidBearer
   # We don't need an overengineered approach based on the Rails cache.
   # No, really.
   module CacheMixin
-    def cached_by(key, &do_it)
-      # We could support more complex types (e.g. arrays) as
-      # value-type cache keys; but right now, our use cases don't
-      # require it:
-      is_value_type = key.is_a? String
+    def cached_by(*keys, &do_it)
+      @__cache_mixin__cache ||= {}
+
+      caller_method = caller[0][/`.*'/][1..-2]
+      keys.unshift(caller_method)
+
+      first_keys = keys.slice!(0, keys.length - 1).join("|")
+      last_key = keys[0]
+      is_value_type = last_key.is_a? String
+
       cache = if is_value_type
-        @__cache_mixin__cache ||= {}
-      else
-        # Use the ::ObjectSpace::WeakMap private API, because the
-        # endeavor of reinventing weak maps on top of (public)
-        # WeakRef's would be called an inversion of abstraction and
-        # would be considered harmful. Sue me (I have unit tests).
-        @__cache_mixin__weakmap_cache ||= ::ObjectSpace::WeakMap.new
-      end
+                @__cache_mixin__cache[first_keys] ||= {}
+              else
+                # Use the ::ObjectSpace::WeakMap private API, because the
+                # endeavor of reinventing weak maps on top of (public)
+                # WeakRef's would be called an inversion of abstraction and
+                # would be considered harmful. Sue me (I have unit tests).
+                @__cache_mixin__cache[first_keys] ||= ::ObjectSpace::WeakMap.new
+              end
 
       now = Time.now()
 
-      if (cached = cache[key])
+      if (cached = cache[last_key])
         unless respond_to?(:cache_timeout) && now - cached[:fetched_at] > cache_timeout
           return cached[:payload]
         end
       end
 
       retval = do_it.call
-      cache[key] = {payload: retval, fetched_at: now}
+      cache[last_key] = { payload: retval, fetched_at: now }
       retval
     end
   end

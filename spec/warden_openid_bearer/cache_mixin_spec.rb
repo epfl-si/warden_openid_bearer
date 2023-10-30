@@ -72,6 +72,30 @@ RSpec.describe WardenOpenidBearer::CacheMixin do
     expect(fred_.by_object(thing2)).to eq(2)
   end
 
+  it "has separate caches per method" do
+    fred = make_cache_mixin_class do
+      def method1(wat)
+        cached_by(wat) do
+          @counter ||= 0
+          @counter += 1
+        end
+      end
+
+      def method2(wat)
+        cached_by(wat) do
+          @counter ||= 0
+          @counter += 1
+        end
+      end
+    end
+
+    fred_ = fred.new
+    expect(fred_.method1("a")).to eq(1)
+    expect(fred_.method1("b")).to eq(2)
+    expect(fred_.method2("a")).to eq(3)
+    expect(fred_.method1("a")).to eq(1)
+  end
+
   it "invalidates the cache after some time" do
     fred = make_cache_mixin_class do
       attr_accessor :cache_timeout
