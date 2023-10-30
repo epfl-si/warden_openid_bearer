@@ -1,12 +1,12 @@
 # WardenOpenidBearer
 
-[Warden](https://github.com/wardencommunity/warden) strategy for authentication with OpenID-Connect JWT bearer tokens.
+[Warden](https://github.com/wardencommunity/warden) strategy for authentication with OpenID-Connect bearer tokens.
 
 This gem is like
 [the `warden_openid_auth gem`](https://rubygems.org/gems/warden_openid_auth),
 except that it only provides support for the very last step of
 the OAuth code flow, i.e. when the resource server / relying party
-(your Ruby Web app) validates and decodes the JWT token.
+(your Ruby Web app) validates and decodes the bearer token.
 
 Use this gem if your client-side Web (or mobile) app will be taking
 care of the rest of the OAuth2 motions, such as redirecting (or
@@ -26,6 +26,8 @@ with iframes, etc.
      manager.default_strategies WardenOpenidBearer::Strategy.register!
      WardenOpenidBearer.configure do |oidc|
        oidc.openid_metadata_url = "https://example.com/.well-known/openid-configuration"
+       oidc.scope = ["openid", "email"]
+       oidc.redirect_uri = ["openid", "email"]
      end
    
      manager.failure_app = Proc.new { |_env|
@@ -45,7 +47,7 @@ with iframes, etc.
 ### Subclassing
 
 Subclassing `WardenOpenidBearer::Strategy` is the recommended way to
-- support more than one authentication server (overriding `metadata_url` and/or `cache_timeout`),
+- support more than one authentication server (overriding `valid?`, `metadata_url` and/or `cache_timeout`),
 - provide user hydration into the class of your choice (overriding `user_of_claims`).
 
 More details available in the rubydoc comments of

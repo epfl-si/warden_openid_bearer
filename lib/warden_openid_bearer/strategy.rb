@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
-require "jwt"
+require "uri"
+require "net/http"
 
 module WardenOpenidBearer
   # Like `WardenOpenidAuth::Strategy` in
   # `lib/warden_openid_auth/strategy.rb` from the `warden_openid_auth`
   # gem, except done right for a modern, split-backend Web application
   # (in which the browser takes charge of the OAuth2 login dance, and
-  # the back-end only checks signatures on the JWT claims).
+  # the back-end only validates bearer tokens).
   #
   # You shoud subclass `WardenOpenidBearer::Strategy` and override the
   # `user_of_claims` protected method if you want `env['warden'].user`
@@ -24,32 +25,28 @@ module WardenOpenidBearer
     include WardenOpenidBearer::Registerer # Provides self.register!
     include WardenOpenidBearer::CacheMixin
 
+    # Override in a subclass to support multiple authentication
+    # servers (if tokens can be discriminated between them somehow).
+    # The base class returns True whenever an `Authentication: Bearer`
+    # request header is present.
     def valid?
-      return if !token
-      # Do the issuer check here, so as to seamlessly support multiple
-      # OIDC issuers inside the same app. If a token is not “for us”,
-      # we want to defer to the other Warden strategy instances in the
-      # stack (one which could typically be another instance of either
-      # WardenOpenidBearer::Strategy, or one of its subclasses); therefore, we
-      # want to return `false` if issuers don't match.
-      untrusted_issuer == config.issuer
+      !!token
     end
 
     def authenticate!
-      if (c = claims)
-        success! user_of_claims(c)
+      res = oauth2_userinfo_response
+      body = res.body
+
+      if res.is_a?(Net::HTTPSuccess)
+        success! user_of_claims(JSON.parse(body))
       else
-        # Given that `valid?` did return true previously,
-        # we know the status with precision:
-        fail! "Invalid OIDC bearer token"
+        fail! body
       end
-    rescue JWT::ExpiredSignature
-      fail! "Expired OIDC bearer token"
     end
 
     # Overridden to always return false, because we typically *don't*
     # want persistent sessions for an OpenID-Connect resource server —
-    # Everything we need to know is in the JWT token.
+    # If we cached, we would break logout.
     def store?
       false
     end
@@ -94,7 +91,7 @@ module WardenOpenidBearer
       WardenOpenidBearer.config.cache_timeout
     end
 
-    # Returns the JWT token from `request.headers['Authorization']`
+    # Returns the bearer token from `request.headers['Authorization']`
     # (which may or may not be valid)
     def token
       # We call this one quite a lot, so we want some caching. Also,
@@ -107,40 +104,17 @@ module WardenOpenidBearer
       end
     end
 
-    # Returns the JWT claims, only if the cryptographic signature and
-    # other security requirements (in particular, the expiration
-    # timestamp) check out.
-    def claims
-      JWT.decode(token, nil, true, jwt_decode_opts).first
-    end
+    def oauth2_userinfo_response
+      cached_by(request) do
+        uri = URI.parse(config.userinfo_endpoint)
 
-    def jwt_decode_opts
-      # Note: issuer check was already done in `valid?`, see
-      # explanations there; skip it here.
-      {
-        algorithm: algorithm,
-        verify_expiration: true,
-        verify_not_before: true,
-        verify_iat: true,
-        jwks: config.jwks
-      }
-    end
+        req = Net::HTTP::Get.new(uri)
+        req['Authorization'] = "bearer #{token}"
 
-    def algorithm
-      return untrusted_algorithm if
-          config.authorization_algs.member? untrusted_algorithm
-    end
-
-    def untrusted_fields
-      JWT.decode(token, nil, false)
-    end
-
-    def untrusted_algorithm
-      untrusted_fields.last["alg"]
-    end
-
-    def untrusted_issuer
-      untrusted_fields.first["iss"]
+        Net::HTTP.start(uri.hostname, uri.port) do |http|
+          http.request(req)
+        end
+      end
     end
   end
 end

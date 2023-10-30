@@ -19,16 +19,8 @@ module WardenOpenidBearer
     # Provide a public API for tuning the timeout.
     attr_writer :cache_timeout
 
-    def jwks
-      json(metadata[:jwks_uri])
-    end
-
-    def issuer
-      metadata[:issuer]
-    end
-
-    def authorization_algs
-      metadata[:authorization_signing_alg_values_supported]
+    def userinfo_endpoint
+      metadata[:userinfo_endpoint]
     end
 
     private

@@ -12,9 +12,9 @@ module WardenOpenidBearer
 
       first_keys = keys.slice!(0, keys.length - 1).join("|")
       last_key = keys[0]
-      is_value_type = last_key.is_a? String
 
-      cache = if is_value_type
+      last_key_is_value_type = last_key.is_a? String
+      cache = if last_key_is_value_type
                 @__cache_mixin__cache[first_keys] ||= {}
               else
                 # Use the ::ObjectSpace::WeakMap private API, because the

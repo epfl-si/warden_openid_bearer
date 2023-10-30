@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
     This gem is like the `warden_openid_auth` gem, except that it only
     provides support for the very last step of the OAuth code flow, i.e.
     when the resource server / relying party (your Ruby Web app)
-    validates and decodes the JWT token.
+    validates the bearer token.
 
     Use this gem if your client-side Web (or mobile) app will be taking
     care of the rest of the OAuth2 motions, such as redirecting (or
@@ -43,5 +43,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency "warden", "~> 1.2.0"
   spec.add_dependency "dry-configurable", "~> 0.15.0"
   spec.add_dependency "net-http", "~> 0.2.2"
-  spec.add_dependency "jwt", "~> 2.5"
 end
