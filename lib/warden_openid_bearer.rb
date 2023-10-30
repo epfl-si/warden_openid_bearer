@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/configurable"
+require "uri"
 
 require_relative "warden_openid_bearer/version"
 require_relative "warden_openid_bearer/registerer"
