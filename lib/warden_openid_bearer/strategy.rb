@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "uri"
-require "net/http"
+require 'uri'
+require 'warden_openid_bearer/net_https'
 
 module WardenOpenidBearer
   # Like `WardenOpenidAuth::Strategy` in
@@ -54,7 +54,12 @@ module WardenOpenidBearer
     # Made public so that one may tune the `strategy.config.cache_timeout`:
     def config
       return @config if @config
+
       @config = WardenOpenidBearer::DiscoveredConfig.new(metadata_url)
+      if (peer_cert = WardenOpenidBearer.config.openid_server_certificate)
+        @config.peer_cert = peer_cert
+      end
+
       @config.cache_timeout = cache_timeout
       @config
     end
@@ -106,14 +111,21 @@ module WardenOpenidBearer
 
     def oauth2_userinfo_response
       cached_by(request) do
-        uri = URI.parse(config.userinfo_endpoint)
+        _do_oauth2_userinfo
+      end
+    end
 
-        req = Net::HTTP::Get.new(uri)
-        req['Authorization'] = "bearer #{token}"
+    def _do_oauth2_userinfo
+      uri = URI.parse(config.userinfo_endpoint)
+      req = Net::HTTP::Get.new(uri)
+      req['Authorization'] = "Bearer #{token}"
 
-        Net::HTTP.start(uri.hostname, uri.port) do |http|
-          http.request(req)
-        end
+      https = WardenOpenidBearer::NetHTTPS.new(uri.hostname, uri.port)
+      if (peer_cert = WardenOpenidBearer.config.openid_server_certificate)
+        https.peer_cert = peer_cert
+      end
+      https.start do |https|
+        https.request(req)
       end
     end
   end

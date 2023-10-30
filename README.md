@@ -28,6 +28,12 @@ with iframes, etc.
        oidc.openid_metadata_url = "https://example.com/.well-known/openid-configuration"
        oidc.scope = ["openid", "email"]
        oidc.redirect_uri = ["openid", "email"]
+       # Optional — Explicit OpenID-Connect server certificate (e.g. for a development rig):
+       oidc.openid_server_certificate = <<-CERT
+-----BEGIN CERTIFICATE-----
+MIIDCTBLAHBLAHBLAH==
+-----END CERTIFICATE-----
+CERT
      end
    
      manager.failure_app = Proc.new { |_env|
