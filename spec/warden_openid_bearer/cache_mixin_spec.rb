@@ -72,6 +72,25 @@ RSpec.describe WardenOpenidBearer::CacheMixin do
     expect(fred_.by_object(thing2)).to eq(2)
   end
 
+  it "caches by a hierarchy of things" do
+    fred = make_cache_mixin_class do
+      def method(a, b, c)
+        cached_by(a, b, c) do
+          @counter ||= 0
+          @counter += 1
+        end
+      end
+    end
+    fred_ = fred.new
+    thing1 = Object.new
+    thing2 = Object.new
+    # Only the latter thing may be an object (for now):
+    expect(fred_.method("a", "b", thing1)).to eq(1)
+    expect(fred_.method("a", "b", thing2)).to eq(2)
+    expect(fred_.method("c", "d", thing1)).to eq(3)
+    expect(fred_.method("a", "b", thing1)).to eq(1)
+  end
+
   it "has separate caches per method" do
     fred = make_cache_mixin_class do
       def method1(wat)
