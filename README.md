@@ -30,10 +30,10 @@ with iframes, etc.
        oidc.redirect_uri = ["openid", "email"]
        # Optional — Explicit OpenID-Connect server certificate (e.g. for a development rig):
        oidc.openid_server_certificate = <<-CERT
------BEGIN CERTIFICATE-----
-MIIDCTBLAHBLAHBLAH==
------END CERTIFICATE-----
-CERT
+   -----BEGIN CERTIFICATE-----
+   MIIDCTBLAHBLAHBLAH==
+   -----END CERTIFICATE-----
+   CERT
      end
    
      manager.failure_app = Proc.new { |_env|
