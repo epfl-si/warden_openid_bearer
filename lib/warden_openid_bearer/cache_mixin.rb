@@ -24,7 +24,7 @@ module WardenOpenidBearer
                 ::ObjectSpace::WeakMap.new
               end
 
-      now = Time.now()
+      now = Time.now
 
       if (cached = cache[last_key])
         unless respond_to?(:cache_timeout) && now - cached[:fetched_at] > cache_timeout
