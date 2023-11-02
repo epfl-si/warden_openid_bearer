@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'net/http'
-require 'warden_openid_bearer/net_https'
+require "net/http"
+require "warden_openid_bearer/net_https"
 
 module WardenOpenidBearer
   # Cacheable configuration (periodically re-)fetched starting from
@@ -24,9 +24,7 @@ module WardenOpenidBearer
       metadata[:userinfo_endpoint]
     end
 
-    def peer_cert=(peer_cert)
-      @peer_cert = peer_cert
-    end
+    attr_writer :peer_cert
 
     private
 
@@ -36,10 +34,10 @@ module WardenOpenidBearer
 
     def json(uri)
       cached_by(uri) do
-        if uri.scheme == 'https'
-          response = WardenOpenidBearer::NetHTTPS.get_response(URI(uri), @peer_cert)
+        response = if uri.scheme == "https"
+          WardenOpenidBearer::NetHTTPS.get_response(URI(uri), @peer_cert)
         else
-          response = Net::HTTP.get_response(URI(uri))
+          Net::HTTP.get_response(URI(uri))
         end
         JSON.parse(response.body, symbolize_names: true)
       end

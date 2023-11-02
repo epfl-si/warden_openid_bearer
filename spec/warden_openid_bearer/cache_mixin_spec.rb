@@ -85,10 +85,10 @@ RSpec.describe WardenOpenidBearer::CacheMixin do
     thing1 = Object.new
     thing2 = Object.new
     # Only the latter thing may be an object (for now):
-    expect(fred_.method("a", "b", thing1)).to eq(1)
-    expect(fred_.method("a", "b", thing2)).to eq(2)
-    expect(fred_.method("c", "d", thing1)).to eq(3)
-    expect(fred_.method("a", "b", thing1)).to eq(1)
+    expect(fred_.method(:a, "b", thing1)).to eq(1)
+    expect(fred_.method(:a, "b", thing2)).to eq(2)
+    expect(fred_.method(:c, "d", thing1)).to eq(3)
+    expect(fred_.method(:a, "b", thing1)).to eq(1)
   end
 
   it "has separate caches per method" do

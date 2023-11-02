@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'net/http'
+require "net/http"
 
 module WardenOpenidBearer
   # Like Net::HTTP, but with TLS and VERIFY_PEER always on.
@@ -22,7 +22,7 @@ module WardenOpenidBearer
     end
 
     def self.get_response(uri, peer_cert = nil)
-      https = self.new(uri.hostname, uri.port)
+      https = new(uri.hostname, uri.port)
       https.peer_cert = peer_cert if peer_cert
 
       req = Net::HTTP::Get.new(uri)

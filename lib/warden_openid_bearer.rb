@@ -14,6 +14,6 @@ module WardenOpenidBearer
   extend Dry::Configurable
 
   setting :openid_metadata_url, constructor: ->(url) { URI(url) }
-  setting :openid_server_certificate, default: nil, constructor: ->(pem) { if pem; OpenSSL::X509::Certificate.new(pem); else nil; end }
+  setting :openid_server_certificate, default: nil, constructor: ->(pem) { pem ? OpenSSL::X509::Certificate.new(pem) : nil }
   setting :cache_timeout, default: 900
 end

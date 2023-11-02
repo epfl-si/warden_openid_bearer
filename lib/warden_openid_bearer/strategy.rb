@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'uri'
-require 'net/http'
-require 'warden_openid_bearer/net_https'
+require "uri"
+require "net/http"
+require "warden_openid_bearer/net_https"
 
 module WardenOpenidBearer
   # Like `WardenOpenidAuth::Strategy` in
@@ -119,9 +119,9 @@ module WardenOpenidBearer
     def _do_oauth2_userinfo
       uri = URI.parse(config.userinfo_endpoint)
       req = Net::HTTP::Get.new(uri)
-      req['Authorization'] = "Bearer #{token}"
+      req["Authorization"] = "Bearer #{token}"
 
-      if uri.scheme == 'https'
+      if uri.scheme == "https"
         http = WardenOpenidBearer::NetHTTPS.new(uri.hostname, uri.port)
         if (peer_cert = WardenOpenidBearer.config.openid_server_certificate)
           http.peer_cert = peer_cert
