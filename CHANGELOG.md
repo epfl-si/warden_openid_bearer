@@ -1,3 +1,7 @@
+## [0.2.0] - 2023-11-02
+- Rewritten to *not* depend on the auth token being JWT (an assumption which only works with Keycloak)
+- Support user-configured (bogus) certificate for development
+
 ## [0.1.4] - 2022-10-11
 - Clean up a stray `puts` left when debugging
 
