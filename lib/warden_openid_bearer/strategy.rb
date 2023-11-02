@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'uri'
+require 'net/http'
 require 'warden_openid_bearer/net_https'
 
 module WardenOpenidBearer
@@ -120,12 +121,16 @@ module WardenOpenidBearer
       req = Net::HTTP::Get.new(uri)
       req['Authorization'] = "Bearer #{token}"
 
-      https = WardenOpenidBearer::NetHTTPS.new(uri.hostname, uri.port)
-      if (peer_cert = WardenOpenidBearer.config.openid_server_certificate)
-        https.peer_cert = peer_cert
+      if uri.scheme == 'https'
+        http = WardenOpenidBearer::NetHTTPS.new(uri.hostname, uri.port)
+        if (peer_cert = WardenOpenidBearer.config.openid_server_certificate)
+          http.peer_cert = peer_cert
+        end
+      else
+        http = Net::HTTP.new(uri.hostname, uri.port)
       end
-      https.start do |https|
-        https.request(req)
+      http.start do |http|
+        http.request(req)
       end
     end
   end

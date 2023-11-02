@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'net/http'
 require 'warden_openid_bearer/net_https'
 
 module WardenOpenidBearer
@@ -35,7 +36,11 @@ module WardenOpenidBearer
 
     def json(uri)
       cached_by(uri) do
-        response = WardenOpenidBearer::NetHTTPS.get_response(URI(uri), @peer_cert)
+        if uri.scheme == 'https'
+          response = WardenOpenidBearer::NetHTTPS.get_response(URI(uri), @peer_cert)
+        else
+          response = Net::HTTP.get_response(URI(uri))
+        end
         JSON.parse(response.body, symbolize_names: true)
       end
     end
